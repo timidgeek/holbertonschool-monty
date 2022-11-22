@@ -1,6 +1,6 @@
 #include "monty.h"
 
-void (*sorter(char *opcode))(stack_t **stack, unsigned int lineNum);
+void (*sorter(line_t line, globe_t *globe))(stack_t **, unsigned int);
 void sorterLine(line_t *line, char *buffer);
 void sorterFile(FILE *file);
 
@@ -34,12 +34,12 @@ int main(int argc, char *argv[])
 
 /**
 * sorter - parser function which fetches opcode
-* @opcode: string used to find func
 *
 * Return: pointer to func
 */
-void (*sorter(char *opcode))(stack_t **stack, unsigned int lineNum)
+void (*sorter(line_t line, globe_t *globe))(stack_t **, unsigned int)
 {
+	unsigned int i = 0;
 	instruction_t opcodeFunction[] = {
 		{"push", push},
 		{"pall", pall},
@@ -51,16 +51,36 @@ void (*sorter(char *opcode))(stack_t **stack, unsigned int lineNum)
 		{NULL, NULL}
 	};
 
-	unsigned int i;
+	if (comment_check(line))
+		return (nop);
 
-	for (i = 0; opcodeFunction[i].opcode; i++)
+	while (opcodeFunction[i].opcode)
 	{
-		if (strcmp(opcodeFunction[i].opcode, opcode) == 0)
+		if (strcmp(opcodeFunction[i].opcode, line.content[0]) == 0)
 		{
+			push_check(line, globe, opcodeFunction[i].opcode);
+			if (arg.flag == 1 &&
+			strcmp(opcodeFunction[i].opcode, "push") == 0)
+			{
+				if (line.content)
+					free(line.content);
+				return (qpush);
+			}
+			free(line.content);
 			return (opcodeFunction[i].f);
 		}
+
+		i++;
 	}
-return (NULL);
+
+	fprintf(stderr, "L%d: unknown instruction %s\n",
+	line.number, line.content[0]);
+	free(line.content);
+	free(globe->buf);
+	free_stack(&(globe->stack));
+	fclose(globe->file);
+	free(globe);
+	exit(EXIT_FAILURE);
 }
 
 /**

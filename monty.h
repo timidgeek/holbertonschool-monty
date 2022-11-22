@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdbool.h>
 
 /* --- structures --- */
 
@@ -69,10 +70,29 @@ typedef struct globe_s
 	FILE *file;
 } globe_t;
 
+/**
+* struct arg_s - helper sorter
+* @arg: argument
+* @flag: flag
+*
+* Description: helper sorter
+*/
+typedef struct arg_s
+{
+	int arg;
+	int flag;
+} arg_t;
+
+extern arg_t arg;
+
 /* --- prototypes ---  */
 
 int main(int argc, char *argv[]);
-void (*sorter(char *opcode))(stack_t **stack, unsigned int lineNum);
+void push_check(line_t line, globe_t *globe, char *opcode);
+bool comment_check(line_t line);
+bool argument_check(char *token);
+void qpush(stack_t **stack, unsigned int lineNum);
+void (*sorter(line_t line, globe_t *globe))(stack_t **, unsigned int);
 void sorterLine(line_t *line, char *buffer);
 void sorterFile(FILE *file);
 void push(stack_t **stack, unsigned int lineNum);
