@@ -1,14 +1,15 @@
 #ifndef MONTY_H
 #define MONTY_H
 
-/* libraries */
+/* --- libraries ---  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <ctype.h>
 
-/* structures */
+/* --- structures --- */
 
 /**
  * struct stack_s - doubly linked list representation of a stack (or queue)
@@ -40,8 +41,40 @@ typedef struct instruction_s
 	void (*f)(stack_t **stack, unsigned int lineNum);
 } instruction_t;
 
-/* prototypes */
+/**
+* struct line_s - contents of line and corresponding number
+* @content: array of tokens
+* @number: line number
+*
+* Description: contents of a line and line number
+*/
+typedef struct line_s
+{
+	unsigned int number;
+	char **content;
+} line_t;
 
+/**
+* struct globe_s - global variable holder
+* @buf: buffer
+* @stack: stack
+* @file: glob var
+*
+* Description: holds global variable
+*/
+typedef struct globe_s
+{
+	char *buf;
+	stack_t *stack;
+	FILE *file;
+} globe_t;
+
+/* --- prototypes ---  */
+
+int main(int argc, char *argv[]);
+void (*sorter(char *opcode))(stack_t **stack, unsigned int lineNum);
+void sorterLine(line_t *line, char *buffer);
+void sorterFile(FILE *file);
 void push(stack_t **stack, unsigned int lineNum);
 void pall(stack_t **stack, unsigned int lineNum);
 void pint(stack_t **stack, unsigned int lineNum);
@@ -51,9 +84,5 @@ void swap(stack_t **stack, unsigned int lineNum);
 void add(stack_t **stack, unsigned int lineNum);
 void nop(stack_t **stack, unsigned int lineNum);
 void free_stack(stack_t **stack);
-
-/* global variable */
-
-extern int global_variable;
 
 #endif /* MONTY_H */
